@@ -1,9 +1,6 @@
 @namespace
 class SpriteKind:
     Resource = SpriteKind.create()
-def on_forever():
-    if nena.overlaps_with(arbre):
-        game.show_long_text("You're touching the tree!", DialogLayout.BOTTOM)
 
 def on_left_pressed():
     animation.run_image_animation(nena,
@@ -23,15 +20,14 @@ def on_right_pressed():
         False)
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
-arbre: Sprite = None
 nena: Sprite = None
-playerCabras = 0
-playerWood = 0
-playerChicken = 0
-playerPotatoes = 0
-playerEggs = 0
-playerHorse = 0
 last_text_time = 0
+playerHorse = 0
+playerEggs = 0
+playerPotatoes = 0
+playerChicken = 0
+playerWood = 0
+playerCabras = 0
 text_cooldown = 2000
 scene.set_background_image(assets.image("""
     seasonalTree1
@@ -97,3 +93,16 @@ arbre.set_position(128, 68)
 nena.set_position(27, 74)
 casa.set_position(27, 67)
 controller.move_sprite(nena, 100, 0)
+
+last_time_dialogue = 0
+dialogue_cooldown = 1000
+
+def on_forever():
+    global last_time_dialogue
+    tiempo_actual = game.runtime()
+    
+    if nena.overlaps_with(arbre) and controller.A.is_pressed():
+        if tiempo_actual - last_time_dialogue > dialogue_cooldown:
+            last_time_dialogue = tiempo_actual
+            game.show_long_text("You're touching the tree!", DialogLayout.BOTTOM)
+forever(on_forever)

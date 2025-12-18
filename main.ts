@@ -2,13 +2,6 @@ namespace SpriteKind {
     export const Resource = SpriteKind.create()
 }
 
-function on_forever() {
-    if (nena.overlapsWith(arbre)) {
-        game.showLongText("You're touching the tree!", DialogLayout.Bottom)
-    }
-    
-}
-
 controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
     animation.runImageAnimation(nena, assets.animation`
             nena-animation-left
@@ -19,15 +12,14 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_presse
             nena-animation-right
             `, 500, false)
 })
-let arbre : Sprite = null
 let nena : Sprite = null
-let playerCabras = 0
-let playerWood = 0
-let playerChicken = 0
-let playerPotatoes = 0
-let playerEggs = 0
-let playerHorse = 0
 let last_text_time = 0
+let playerHorse = 0
+let playerEggs = 0
+let playerPotatoes = 0
+let playerChicken = 0
+let playerWood = 0
+let playerCabras = 0
 let text_cooldown = 2000
 scene.setBackgroundImage(assets.image`
     seasonalTree1
@@ -35,7 +27,7 @@ scene.setBackgroundImage(assets.image`
 nena = sprites.create(assets.image`
     nena-front
     `, SpriteKind.Player)
-arbre = sprites.create(assets.image`
+let arbre = sprites.create(assets.image`
     treePine
     `, SpriteKind.Resource)
 let casa = sprites.create(img`
@@ -92,3 +84,17 @@ arbre.setPosition(128, 68)
 nena.setPosition(27, 74)
 casa.setPosition(27, 67)
 controller.moveSprite(nena, 100, 0)
+let last_time_dialogue = 0
+let dialogue_cooldown = 1000
+forever(function on_forever() {
+    
+    let tiempo_actual = game.runtime()
+    if (nena.overlapsWith(arbre) && controller.A.isPressed()) {
+        if (tiempo_actual - last_time_dialogue > dialogue_cooldown) {
+            last_time_dialogue = tiempo_actual
+            game.showLongText("You're touching the tree!", DialogLayout.Bottom)
+        }
+        
+    }
+    
+})
