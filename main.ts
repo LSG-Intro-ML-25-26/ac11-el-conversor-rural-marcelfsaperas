@@ -2,32 +2,158 @@ namespace SpriteKind {
     export const Resource = SpriteKind.create()
 }
 
+function menu_casa() {
+    
+}
+
+function chop_tree() {
+    
+    arbre.setImage(img`
+        ................................
+        ............f...................
+        ............8f..8..f.......ff...
+        ......f......8..f..f....fff.....
+        .....8......f8..f.f....ff.......
+        fff..8f.....f8..f.f...ff..ff....
+        ...f8f8f....f8f..8....88...f....
+        .....ff8f....ff..88..f8....8f...
+        .......f88...fff.f8f.8f....ff...
+        .......fffff..ff..ff.8f...88fff.
+        .........ff8f.fff.ff88f..f8ff...
+        ...........fffffff.f8f..ffff....
+        ....88888f..ffffffffff.f8f......
+        ...f....f8ff88fffff8fffff.......
+        ...f......8fff88fffff88f........
+        ..............f88fffffff........
+        ...............88ffffff.........
+        ...............f88ffff..........
+        ................88ffff..........
+        ................88fff...........
+        ................88fff...........
+        ................88fff...........
+        ................88fff...........
+        ................88fff...........
+        ................88fff...........
+        ...............f8ffff...........
+        ...............88ffff...........
+        ..............888fffff..........
+        .............f8fffffff..........
+        .........f88f88f.fffffff........
+        ......8ff8f.fff..f8f.ff.ff......
+        ....f8f....f......f...fff.ffff..
+        `)
+    tree_cut = true
+    tree_cut_time = game.runtime()
+    playerWood = playerWood + 2
+}
+
 controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
     animation.runImageAnimation(nena, assets.animation`
             nena-animation-left
             `, 500, false)
 })
+function regenerate_tree() {
+    let current_time: number;
+    
+    if (tree_cut) {
+        current_time = game.runtime()
+        if (current_time - tree_cut_time >= regrowth_time) {
+            arbre.setImage(assets.image`
+                treePine
+                `)
+            tree_cut = false
+        }
+        
+    }
+    
+}
+
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
     animation.runImageAnimation(nena, assets.animation`
             nena-animation-right
             `, 500, false)
 })
+controller.menu.onEvent(ControllerButtonEvent.Pressed, function on_menu_pressed() {
+    
+    if (menu_open == false) {
+        myMenu = miniMenu.createMenuFromArray(backpack)
+        menu_open = true
+        myMenu.setDimensions(100, 90)
+        myMenu.setTitle("Inventory")
+        myMenu.setFrame(img`
+            8888.....88....888....888...8888.
+            867788..8768..86768..8678.887768.
+            8767768.877788676768877788677678.
+            87767768676778776778776786776778.
+            .877876667767877677876778678778..
+            .867786686766867676866766687768..
+            ..8666868867688686886768686668...
+            .88866688888888888888888866688...
+            8777768866666666666666668886688..
+            86767768666666666666666688677778.
+            .8776678666666666666666686776768.
+            ..87766866666666666666668766778..
+            ..8888886666666666666666866778...
+            .86776886666666666666666888888...
+            8677776866666666666666668867768..
+            87666688666666666666666686777768.
+            86777768666666666666666688666678.
+            .8677688666666666666666686777768.
+            ..88888866666666666666668867768..
+            ..8776686666666666666666888888...
+            .87766786666666666666666866778...
+            8676776866666666666666668766778..
+            87777688666666666666666686776768.
+            .8866888666666666666666688677778.
+            ..88666888888888888888888666888..
+            ..8666868676886868867688686668...
+            .867786667668676768667686687768..
+            .877876877678776778767766678778..
+            87767768767787767787767686776778.
+            876776887778867676887778.8677678.
+            867788.8768..86768..8678..887768.
+            8888...888....888....88.....8888.
+            .................................
+            `)
+        myMenu.setPosition(80, 60)
+        myMenu.setStyleProperty(miniMenu.StyleKind.Title, miniMenu.StyleProperty.Alignment, 5)
+        myMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.Background, 8)
+    } else {
+        myMenu.close()
+        menu_open = false
+    }
+    
+})
+let last_chop_time = 0
+let current_time2 = 0
+let myMenu : miniMenu.MenuSprite = null
+let tree_cut_time = 0
+let tree_cut = false
+let menu_open = false
+let backpack : miniMenu.MenuItem[] = []
+let regrowth_time = 0
+let playerWood = 0
 let nena : Sprite = null
+let arbre : Sprite = null
+let tiempo_actual = 0
+let last_time_dialogue = 0
 let last_text_time = 0
 let playerHorse = 0
 let playerEggs = 0
 let playerPotatoes = 0
 let playerChicken = 0
-let playerWood = 0
 let playerCabras = 0
+playerWood = 0
+let chop_cooldown = 2000
+regrowth_time = 3000
+nena = null
+arbre = null
 let text_cooldown = 2000
+regrowth_time = 3000
 scene.setBackgroundImage(assets.image`
     seasonalTree1
     `)
-nena = sprites.create(assets.image`
-    nena-front
-    `, SpriteKind.Player)
-let arbre = sprites.create(assets.image`
+arbre = sprites.create(assets.image`
     treePine
     `, SpriteKind.Resource)
 let casa = sprites.create(img`
@@ -80,21 +206,33 @@ let casa = sprites.create(img`
         .....64eee444c66f4e44e44e44e44ee66c444eee46.....
         ......6ccc666c66e4e44e44e44e44ee66c666ccc6......
         `, SpriteKind.Player)
+nena = sprites.create(assets.image`
+    nena-front
+    `, SpriteKind.Player)
 arbre.setPosition(128, 68)
-nena.setPosition(27, 74)
+nena.setPosition(70, 74)
 casa.setPosition(27, 67)
 controller.moveSprite(nena, 100, 0)
-let last_time_dialogue = 0
 let dialogue_cooldown = 1000
+backpack = [miniMenu.createMenuItem("Chickens"), miniMenu.createMenuItem("Potatoes"), miniMenu.createMenuItem("Goats"), miniMenu.createMenuItem("Eggs"), miniMenu.createMenuItem("Horses")]
+menu_open = false
 forever(function on_forever() {
     
-    let tiempo_actual = game.runtime()
-    if (nena.overlapsWith(arbre) && controller.A.isPressed()) {
-        if (tiempo_actual - last_time_dialogue > dialogue_cooldown) {
-            last_time_dialogue = tiempo_actual
-            game.showLongText("You're touching the tree!", DialogLayout.Bottom)
+    current_time2 = game.runtime()
+    regenerate_tree()
+    if (!tree_cut) {
+        if (nena.overlapsWith(arbre) && controller.B.isPressed()) {
+            if (current_time2 - last_chop_time >= chop_cooldown) {
+                last_chop_time = current_time2
+                chop_tree()
+            }
+            
         }
         
+    }
+    
+    if (menu_open == true && controller.B.isPressed()) {
+        myMenu.close()
     }
     
 })
