@@ -1,13 +1,22 @@
 namespace SpriteKind {
     export const Resource = SpriteKind.create()
+    export const House = SpriteKind.create()
 }
-
-function menu_casa() {
-    
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    nena,
+    assets.animation`nena-animation-up`,
+    200,
+    false
+    )
+})
+function conseguir_gallina () {
+    playerChicken += 1
 }
-
-function chop_tree() {
-    
+function conseguir_caballo () {
+    playerHorse += 1
+}
+function cortar_arbol () {
     arbre.setImage(img`
         ................................
         ............f...................
@@ -45,37 +54,67 @@ function chop_tree() {
     tree_cut = true
     tree_cut_time = game.runtime()
     playerWood = playerWood + 2
+    actualizar_cantidades()
 }
-
-controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
-    animation.runImageAnimation(nena, assets.animation`
-            nena-animation-left
-            `, 500, false)
-})
-function regenerate_tree() {
-    let current_time: number;
-    
-    if (tree_cut) {
-        current_time = game.runtime()
-        if (current_time - tree_cut_time >= regrowth_time) {
-            arbre.setImage(assets.image`
-                treePine
-                `)
-            tree_cut = false
-        }
-        
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (nena.overlapsWith(casa)) {
+        conseguir_gallina()
     }
-    
-}
-
-controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
-    animation.runImageAnimation(nena, assets.animation`
-            nena-animation-right
-            `, 500, false)
 })
-controller.menu.onEvent(ControllerButtonEvent.Pressed, function on_menu_pressed() {
-    
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    nena,
+    assets.animation`nena-animation-left`,
+    500,
+    false
+    )
+})
+function actualizar_cantidades () {
+    cantidades_recursos[0] = playerWood
+    cantidades_recursos[1] = playerChicken
+    cantidades_recursos[2] = playerPotatoes
+    cantidades_recursos[3] = playerCabras
+    cantidades_recursos[4] = playerEggs
+    cantidades_recursos[5] = playerHorse
+}
+function crear_menu_inventario () {
+    let item_texto: string;
+backpack = []
+    actualizar_cantidades()
+    while (i < nombres_recursos.length) {
+        item_texto = "" + nombres_recursos[i] + ": " + ("" + cantidades_recursos[i])
+        backpack.push(miniMenu.createMenuItem(item_texto))
+        i += 1
+    }
+}
+function conseguir_huevo () {
+    playerEggs += 1
+}
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    nena,
+    assets.animation`nena-animation-right`,
+    500,
+    false
+    )
+})
+function conseguir_patata () {
+    playerPotatoes += 1
+}
+function conseguir_cabra () {
+    playerCabras += 1
+}
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    nena,
+    assets.animation`nena-animation-down`,
+    200,
+    false
+    )
+})
+controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     if (menu_open == false) {
+        crear_menu_inventario()
         myMenu = miniMenu.createMenuFromArray(backpack)
         menu_open = true
         myMenu.setDimensions(100, 90)
@@ -118,121 +157,137 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function on_menu_pressed(
         myMenu.setPosition(80, 60)
         myMenu.setStyleProperty(miniMenu.StyleKind.Title, miniMenu.StyleProperty.Alignment, 5)
         myMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.Background, 8)
+        myMenu.onButtonPressed(controller.A, function (selection, selectedIndex) {
+        	
+        })
     } else {
         myMenu.close()
         menu_open = false
     }
-    
 })
+function regenerar_arbol () {
+    let current_time: number;
+if (tree_cut) {
+        current_time = game.runtime()
+        if (current_time - tree_cut_time >= regrowth_time) {
+            arbre.setImage(assets.image`treePine`)
+            tree_cut = false
+        }
+    }
+}
 let last_chop_time = 0
 let current_time2 = 0
-let myMenu : miniMenu.MenuSprite = null
+let myMenu: miniMenu.MenuSprite = null
+let menu_open = false
+let i = 0
+let backpack: miniMenu.MenuItem[] = []
+let playerEggs = 0
+let playerCabras = 0
+let playerPotatoes = 0
+let playerWood = 0
 let tree_cut_time = 0
 let tree_cut = false
-let menu_open = false
-let backpack : miniMenu.MenuItem[] = []
-let regrowth_time = 0
-let playerWood = 0
-let nena : Sprite = null
-let arbre : Sprite = null
-let tiempo_actual = 0
-let last_time_dialogue = 0
-let last_text_time = 0
 let playerHorse = 0
-let playerEggs = 0
-let playerPotatoes = 0
 let playerChicken = 0
-let playerCabras = 0
-playerWood = 0
+let nena: Sprite = null
+let casa: Sprite = null
+let arbre: Sprite = null
+let cantidades_recursos: number[] = []
+let nombres_recursos: string[] = []
+let regrowth_time = 0
+let last_text_time = 0
+let last_time_dialogue = 0
+let tiempo_actual = 0
 let chop_cooldown = 2000
 regrowth_time = 3000
-nena = null
-arbre = null
 let text_cooldown = 2000
-regrowth_time = 3000
-scene.setBackgroundImage(assets.image`
-    seasonalTree1
-    `)
-arbre = sprites.create(assets.image`
-    treePine
-    `, SpriteKind.Resource)
-let casa = sprites.create(img`
-        ....................e2e22e2e....................
-        .................222eee22e2e222.................
-        ..............222e22e2e22eee22e222..............
-        ...........e22e22eeee2e22e2eeee22e22e...........
-        ........eeee22e22e22e2e22e2e22e22e22eeee........
-        .....222e22e22eeee22e2e22e2e22eeee22e22e222.....
-        ...22eeee22e22e22e22eee22eee22e22e22e22eeee22...
-        4cc22e22e22eeee22e22e2e22e2e22e22eeee22e22e22cc4
-        6c6eee22e22e22e22e22e2e22e2e22e22e22e22e22eee6c6
-        46622e22eeee22e22eeee2e22e2eeee22e22eeee22e22664
-        46622e22e22e22eeee22e2e22e2e22eeee22e22e22e22664
-        4cc22eeee22e22e22e22eee22eee22e22e22e22eeee22cc4
-        6c622e22e22eeee22e22e2e22e2e22e22eeee22e22e226c6
-        466eee22e22e22e22e22e2e22e2e22e22e22e22e22eee664
-        46622e22eeee22e22e22e2e22e2e22e22e22eeee22e22664
-        4cc22e22e22e22e22eeee2e22e2eeee22e22e22e22e22cc4
-        6c622eeee22e22eeee22eee22eee22eeee22e22eeee226c6
-        46622e22e22eeee22e22e2e22e2e22e22eeee22e22e22664
-        466eee22e22e22e22e22e2e22e2e22e22e22e22e22eee664
-        4cc22e22eeee22e22e22e2e22e2e22e22e22eeee22e22cc4
-        6c622e22e22e22e22e22eee22eee22e22e22e22e22e226c6
-        46622eeee22e22e22eeecc6666cceee22e22e22eeee22664
-        46622e22e22e22eeecc6666666666cceee22e22e22e22664
-        4cceee22e22eeecc66666cccccc66666cceee22e22eeecc4
-        6c622e22eeecc66666cc64444446cc66666cceee22e226c6
-        46622e22cc66666cc64444444444446cc66666cc22e22664
-        46622cc6666ccc64444444444444444446ccc6666cc22664
-        4ccc6666ccc6444bcc666666666666ccb4446ccc6666ccc4
-        cccccccc6666666cb44444444444444bc6666666cccccccc
-        64444444444446c444444444444444444c64444444444446
-        66cb444444444cb411111111111111114bc444444444bc66
-        666cccccccccccd166666666666666661dccccccccccc666
-        6666444444444c116eeeeeeeeeeeeee611c4444444446666
-        666e2222222e4c16e4e44e44e44e44ee61c4e2222222e666
-        666eeeeeeeee4c16e4e44e44e44e44ee61c4eeeeeeeee666
-        666eddddddde4c66f4e4effffffe44ee66c4eddddddde666
-        666edffdffde4c66f4effffffffff4ee66c4edffdffde666
-        666edccdccde4c66f4effffffffffeee66c4edccdccde666
-        666eddddddde4c66f4eeeeeeeeeeeeee66c4eddddddde666
-        c66edffdffde4c66e4e44e44e44e44ee66c4edffdffde66c
-        c66edccdccde4c66e4e44e44e44e44ee66c4edccdccde66c
-        cc66666666664c66e4e44e44e44feeee66c46666666666cc
-        .c66444444444c66e4e44e44e44ffffe66c44444444466c.
-        ..c64eee4eee4c66f4e44e44e44f44fe66c4eee4eee46c..
-        ...c4eee4eee4c66f4e44e44e44effee66c4eee4eee4c...
-        ....644444444c66f4e44e44e44e44ee66c444444446....
-        .....64eee444c66f4e44e44e44e44ee66c444eee46.....
-        ......6ccc666c66e4e44e44e44e44ee66c666ccc6......
-        `, SpriteKind.Player)
-nena = sprites.create(assets.image`
-    nena-front
+nombres_recursos = [
+"Wood",
+"Chickens",
+"Potatoes",
+"Goats",
+"Eggs",
+"Horses"
+]
+cantidades_recursos = [
+0,
+0,
+0,
+0,
+0,
+0
+]
+scene.setBackgroundImage(assets.image`seasonalTree1`)
+arbre = sprites.create(assets.image`treePine`, SpriteKind.Resource)
+casa = sprites.create(img`
+    ....................e2e22e2e....................
+    .................222eee22e2e222.................
+    ..............222e22e2e22eee22e222..............
+    ...........e22e22eeee2e22e2eeee22e22e...........
+    ........eeee22e22e22e2e22e2e22e22e22eeee........
+    .....222e22e22eeee22e2e22e2e22eeee22e22e222.....
+    ...22eeee22e22e22e22eee22eee22e22e22e22eeee22...
+    4cc22e22e22eeee22e22e2e22e2e22e22eeee22e22e22cc4
+    6c6eee22e22e22e22e22e2e22e2e22e22e22e22e22eee6c6
+    46622e22eeee22e22eeee2e22e2eeee22e22eeee22e22664
+    46622e22e22e22eeee22e2e22e2e22eeee22e22e22e22664
+    4cc22eeee22e22e22e22eee22eee22e22e22e22eeee22cc4
+    6c622e22e22eeee22e22e2e22e2e22e22eeee22e22e226c6
+    466eee22e22e22e22e22e2e22e2e22e22e22e22e22eee664
+    46622e22eeee22e22e22e2e22e2e22e22e22eeee22e22664
+    4cc22e22e22e22e22eeee2e22e2eeee22e22e22e22e22cc4
+    6c622eeee22e22eeee22eee22eee22eeee22e22eeee226c6
+    46622e22e22eeee22e22e2e22e2e22e22eeee22e22e22664
+    466eee22e22e22e22e22e2e22e2e22e22e22e22e22eee664
+    4cc22e22eeee22e22e22e2e22e2e22e22e22eeee22e22cc4
+    6c622e22e22e22e22e22eee22eee22e22e22e22e22e226c6
+    46622eeee22e22e22eeecc6666cceee22e22e22eeee22664
+    46622e22e22e22eeecc6666666666cceee22e22e22e22664
+    4cceee22e22eeecc66666cccccc66666cceee22e22eeecc4
+    6c622e22eeecc66666cc64444446cc66666cceee22e226c6
+    46622e22cc66666cc64444444444446cc66666cc22e22664
+    46622cc6666ccc64444444444444444446ccc6666cc22664
+    4ccc6666ccc6444bcc666666666666ccb4446ccc6666ccc4
+    cccccccc6666666cb44444444444444bc6666666cccccccc
+    64444444444446c444444444444444444c64444444444446
+    66cb444444444cb411111111111111114bc444444444bc66
+    666cccccccccccd166666666666666661dccccccccccc666
+    6666444444444c116eeeeeeeeeeeeee611c4444444446666
+    666e2222222e4c16e4e44e44e44e44ee61c4e2222222e666
+    666eeeeeeeee4c16e4e44e44e44e44ee61c4eeeeeeeee666
+    666eddddddde4c66f4e4effffffe44ee66c4eddddddde666
+    666edffdffde4c66f4effffffffff4ee66c4edffdffde666
+    666edccdccde4c66f4effffffffffeee66c4edccdccde666
+    666eddddddde4c66f4eeeeeeeeeeeeee66c4eddddddde666
+    c66edffdffde4c66e4e44e44e44e44ee66c4edffdffde66c
+    c66edccdccde4c66e4e44e44e44e44ee66c4edccdccde66c
+    cc66666666664c66e4e44e44e44feeee66c46666666666cc
+    .c66444444444c66e4e44e44e44ffffe66c44444444466c.
+    ..c64eee4eee4c66f4e44e44e44f44fe66c4eee4eee46c..
+    ...c4eee4eee4c66f4e44e44e44effee66c4eee4eee4c...
+    ....644444444c66f4e44e44e44e44ee66c444444446....
+    .....64eee444c66f4e44e44e44e44ee66c444eee46.....
+    ......6ccc666c66e4e44e44e44e44ee66c666ccc6......
     `, SpriteKind.Player)
+nena = sprites.create(assets.image`nena-front`, SpriteKind.Player)
 arbre.setPosition(128, 68)
 nena.setPosition(70, 74)
 casa.setPosition(27, 67)
 controller.moveSprite(nena, 100, 0)
 let dialogue_cooldown = 1000
-backpack = [miniMenu.createMenuItem("Chickens"), miniMenu.createMenuItem("Potatoes"), miniMenu.createMenuItem("Goats"), miniMenu.createMenuItem("Eggs"), miniMenu.createMenuItem("Horses")]
-menu_open = false
-forever(function on_forever() {
-    
+forever(function () {
     current_time2 = game.runtime()
-    regenerate_tree()
-    if (!tree_cut) {
+    regenerar_arbol()
+    if (!(tree_cut)) {
         if (nena.overlapsWith(arbre) && controller.B.isPressed()) {
             if (current_time2 - last_chop_time >= chop_cooldown) {
                 last_chop_time = current_time2
-                chop_tree()
+                cortar_arbol()
             }
-            
         }
-        
     }
-    
     if (menu_open == true && controller.B.isPressed()) {
+        menu_open = false
         myMenu.close()
     }
-    
 })

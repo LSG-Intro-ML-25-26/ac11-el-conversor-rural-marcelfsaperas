@@ -1,9 +1,24 @@
 @namespace
 class SpriteKind:
     Resource = SpriteKind.create()
-def menu_casa():
-    pass
-def chop_tree():
+    House = SpriteKind.create()
+
+def on_up_pressed():
+    animation.run_image_animation(nena,
+        assets.animation("""
+            nena-animation-up
+            """),
+        200,
+        False)
+controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
+
+def conseguir_gallina():
+    global playerChicken
+    playerChicken += 1
+def conseguir_caballo():
+    global playerHorse
+    playerHorse += 1
+def cortar_arbol():
     global tree_cut, tree_cut_time, playerWood
     arbre.set_image(img("""
         ................................
@@ -42,6 +57,12 @@ def chop_tree():
     tree_cut = True
     tree_cut_time = game.runtime()
     playerWood = playerWood + 2
+    actualizar_cantidades()
+
+def on_a_pressed():
+    if nena.overlaps_with(casa):
+        conseguir_gallina()
+controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_left_pressed():
     animation.run_image_animation(nena,
@@ -52,15 +73,30 @@ def on_left_pressed():
         False)
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
-def regenerate_tree():
-    global tree_cut
-    if tree_cut:
-        current_time = game.runtime()
-        if current_time - tree_cut_time >= regrowth_time:
-            arbre.set_image(assets.image("""
-                treePine
-                """))
-            tree_cut = False
+def actualizar_cantidades():
+    cantidades_recursos[0] = playerWood
+
+    cantidades_recursos[1] = playerChicken
+
+    cantidades_recursos[2] = playerPotatoes
+
+    cantidades_recursos[3] = playerCabras
+
+    cantidades_recursos[4] = playerEggs
+
+    cantidades_recursos[5] = playerHorse
+
+def crear_menu_inventario():
+    global backpack, i
+    backpack = []
+    actualizar_cantidades()
+    while i < len(nombres_recursos):
+        item_texto = "" + nombres_recursos[i] + ": " + ("" + str(cantidades_recursos[i]))
+        backpack.append(miniMenu.create_menu_item(item_texto))
+        i += 1
+def conseguir_huevo():
+    global playerEggs
+    playerEggs += 1
 
 def on_right_pressed():
     animation.run_image_animation(nena,
@@ -71,9 +107,27 @@ def on_right_pressed():
         False)
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
+def conseguir_patata():
+    global playerPotatoes
+    playerPotatoes += 1
+def conseguir_cabra():
+    global playerCabras
+    playerCabras += 1
+
+def on_down_pressed():
+    animation.run_image_animation(nena,
+        assets.animation("""
+            nena-animation-down
+            """),
+        200,
+        False)
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
+
+
 def on_menu_pressed():
     global myMenu, menu_open
     if menu_open == False:
+        crear_menu_inventario()
         myMenu = miniMenu.create_menu_from_array(backpack)
         menu_open = True
         myMenu.set_dimensions(100, 90)
@@ -120,37 +174,53 @@ def on_menu_pressed():
         myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
             miniMenu.StyleProperty.BACKGROUND,
             8)
+        
+        def on_button_pressed(selection, selectedIndex):
+            pass
+        myMenu.on_button_pressed(controller.A, on_button_pressed)
+        
     else:
         myMenu.close()
         menu_open = False
 controller.menu.on_event(ControllerButtonEvent.PRESSED, on_menu_pressed)
 
+def regenerar_arbol():
+    global tree_cut
+    if tree_cut:
+        current_time = game.runtime()
+        if current_time - tree_cut_time >= regrowth_time:
+            arbre.set_image(assets.image("""
+                treePine
+                """))
+            tree_cut = False
 last_chop_time = 0
 current_time2 = 0
 myMenu: miniMenu.MenuSprite = None
+menu_open = False
+i = 0
+backpack: List[miniMenu.MenuItem] = []
+playerEggs = 0
+playerCabras = 0
+playerPotatoes = 0
+playerWood = 0
 tree_cut_time = 0
 tree_cut = False
-menu_open = False
-backpack: List[miniMenu.MenuItem] = []
-regrowth_time = 0
-playerWood = 0
+playerHorse = 0
+playerChicken = 0
 nena: Sprite = None
+casa: Sprite = None
 arbre: Sprite = None
+cantidades_recursos: List[number] = []
+nombres_recursos: List[str] = []
+regrowth_time = 0
 tiempo_actual = 0
 last_time_dialogue = 0
 last_text_time = 0
-playerHorse = 0
-playerEggs = 0
-playerPotatoes = 0
-playerChicken = 0
-playerCabras = 0
-playerWood = 0
 chop_cooldown = 2000
 regrowth_time = 3000
-nena = None
-arbre = None
 text_cooldown = 2000
-regrowth_time = 3000
+nombres_recursos = ["Wood", "Chickens", "Potatoes", "Goats", "Eggs", "Horses"]
+cantidades_recursos = [0, 0, 0, 0, 0, 0]
 scene.set_background_image(assets.image("""
     seasonalTree1
     """))
@@ -216,22 +286,17 @@ nena.set_position(70, 74)
 casa.set_position(27, 67)
 controller.move_sprite(nena, 100, 0)
 dialogue_cooldown = 1000
-backpack = [miniMenu.create_menu_item("Chickens"),
-    miniMenu.create_menu_item("Potatoes"),
-    miniMenu.create_menu_item("Goats"),
-    miniMenu.create_menu_item("Eggs"),
-    miniMenu.create_menu_item("Horses")]
-menu_open = False
 
 def on_forever():
-    global current_time2, last_chop_time
+    global current_time2, last_chop_time, menu_open
     current_time2 = game.runtime()
-    regenerate_tree()
+    regenerar_arbol()
     if not (tree_cut):
         if nena.overlaps_with(arbre) and controller.B.is_pressed():
             if current_time2 - last_chop_time >= chop_cooldown:
                 last_chop_time = current_time2
-                chop_tree()
+                cortar_arbol()
     if menu_open == True and controller.B.is_pressed():
+        menu_open = False
         myMenu.close()
 forever(on_forever)
