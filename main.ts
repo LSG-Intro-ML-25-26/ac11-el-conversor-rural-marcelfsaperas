@@ -58,7 +58,7 @@ function cortar_arbol () {
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (nena.overlapsWith(casa)) {
-        conseguir_gallina()
+        house_menu2()
     }
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -165,6 +165,38 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
         menu_open = false
     }
 })
+function house_menu2 () {
+    let menu_items: miniMenu.MenuItem[] = []
+    house_menu = [
+    "Chickens",
+    "Potatoes",
+    "Goats",
+    "Eggs",
+    "Horses"
+    ]
+    for (let item of house_menu) {
+        menu_items.push(miniMenu.createMenuItem(item))
+    }
+    myMenu2 = miniMenu.createMenuFromArray(menu_items)
+    myMenu2.onButtonPressed(controller.A, function (selection2, selectedIndex2) {
+        if (selectedIndex2 == 0) {
+            if (true) {
+            	
+            }
+        } else if (selectedIndex2 == 1) {
+        	
+        } else if (selectedIndex2 == 2) {
+        	
+        } else if (selectedIndex2 == 3) {
+        	
+        } else if (selectedIndex2 == 4) {
+        	
+        }
+    })
+    myMenu2.setTitle("House Menu")
+    myMenu2.setPosition(80, 60)
+    house_inventory = myMenu2
+}
 function regenerar_arbol () {
     let current_time: number;
 if (tree_cut) {
@@ -177,6 +209,9 @@ if (tree_cut) {
 }
 let last_chop_time = 0
 let current_time2 = 0
+let house_inventory: miniMenu.MenuSprite = null
+let myMenu2: miniMenu.MenuSprite = null
+let house_menu: string[] = []
 let myMenu: miniMenu.MenuSprite = null
 let menu_open = false
 let i = 0
@@ -195,9 +230,9 @@ let arbre: Sprite = null
 let cantidades_recursos: number[] = []
 let nombres_recursos: string[] = []
 let regrowth_time = 0
-let last_text_time = 0
-let last_time_dialogue = 0
 let tiempo_actual = 0
+let last_time_dialogue = 0
+let last_text_time = 0
 let chop_cooldown = 2000
 regrowth_time = 3000
 let text_cooldown = 2000

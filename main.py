@@ -61,7 +61,7 @@ def cortar_arbol():
 
 def on_a_pressed():
     if nena.overlaps_with(casa):
-        conseguir_gallina()
+        house_menu2()
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_left_pressed():
@@ -75,17 +75,11 @@ controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
 def actualizar_cantidades():
     cantidades_recursos[0] = playerWood
-
     cantidades_recursos[1] = playerChicken
-
     cantidades_recursos[2] = playerPotatoes
-
     cantidades_recursos[3] = playerCabras
-
     cantidades_recursos[4] = playerEggs
-
     cantidades_recursos[5] = playerHorse
-
 def crear_menu_inventario():
     global backpack, i
     backpack = []
@@ -122,7 +116,6 @@ def on_down_pressed():
         200,
         False)
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
-
 
 def on_menu_pressed():
     global myMenu, menu_open
@@ -184,6 +177,30 @@ def on_menu_pressed():
         menu_open = False
 controller.menu.on_event(ControllerButtonEvent.PRESSED, on_menu_pressed)
 
+def house_menu2():
+    global house_menu, myMenu2, house_inventory
+    menu_items: List[miniMenu.MenuItem] = []
+    house_menu = ["Chickens", "Potatoes", "Goats", "Eggs", "Horses"]
+    for item in house_menu:
+        menu_items.append(miniMenu.create_menu_item(item))
+    myMenu2 = miniMenu.create_menu_from_array(menu_items)
+    
+    def on_button_pressed2(selection2, selectedIndex2):
+        if selectedIndex2 == 0:
+            pass
+        elif selectedIndex2 == 1:
+            pass
+        elif selectedIndex2 == 2:
+            pass
+        elif selectedIndex2 == 3:
+            pass
+        elif selectedIndex2 == 4:
+            pass
+    myMenu2.on_button_pressed(controller.A, on_button_pressed2)
+    
+    myMenu2.set_title("House Menu")
+    myMenu2.set_position(80, 60)
+    house_inventory = myMenu2
 def regenerar_arbol():
     global tree_cut
     if tree_cut:
@@ -195,6 +212,9 @@ def regenerar_arbol():
             tree_cut = False
 last_chop_time = 0
 current_time2 = 0
+house_inventory: miniMenu.MenuSprite = None
+myMenu2: miniMenu.MenuSprite = None
+house_menu: List[str] = []
 myMenu: miniMenu.MenuSprite = None
 menu_open = False
 i = 0
@@ -213,9 +233,9 @@ arbre: Sprite = None
 cantidades_recursos: List[number] = []
 nombres_recursos: List[str] = []
 regrowth_time = 0
-tiempo_actual = 0
-last_time_dialogue = 0
 last_text_time = 0
+last_time_dialogue = 0
+tiempo_actual = 0
 chop_cooldown = 2000
 regrowth_time = 3000
 text_cooldown = 2000
