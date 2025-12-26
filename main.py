@@ -61,7 +61,7 @@ def cortar_arbol():
 
 def on_a_pressed():
     if nena.overlaps_with(casa):
-        house_menu2()
+        house_menu3()
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_left_pressed():
@@ -73,6 +73,106 @@ def on_left_pressed():
         False)
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
+def house_menu3():
+    global house_menu, myMenu2, house_inventory
+    menu_items: List[miniMenu.MenuItem] = []
+    house_menu = ["Chickens", "Potatoes", "Goats", "Eggs", "Horses"]
+    for item in house_menu:
+        menu_items.append(miniMenu.create_menu_item(item))
+    myMenu2 = miniMenu.create_menu_from_array(menu_items)
+    myMenu2.set_frame(img("""
+        ..bbbbbbbbbbbbbbbbbbbb..
+        .bd111111111111111111db.
+        bd1dbbbbbbbbbbbbbbbbd1db
+        b1dbbbbbbbbbbbbbbbbbbd1b
+        b1bd1111111111111111db1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1b111111111111111111b1b
+        b1bd1111111111111111db1b
+        bd1bbbbbbbbbbbbbbbbbb1db
+        bbd111111111111111111dbb
+        .bbbbbbbbbbbbbbbbbbbbbb.
+        ..bbbbbbbbbbbbbbbbbbbb..
+        """))
+    myMenu2.set_dimensions(100, 90)
+            
+    def on_button_pressed(selection2, selectedIndex2):
+        global playerWood, playerChicken, playerPotatoes, playerCabras, playerEggs, playerHorse
+        if selectedIndex2 == 0:
+            if playerWood >= 6:
+                gallinas_recibidas = Math.idiv(playerWood, 6)
+                if gallinas_recibidas > 0:
+                    playerWood += 0 - gallinas_recibidas * 6
+                    playerChicken += gallinas_recibidas
+                    game.splash("Recibiste " + ("" + str(gallinas_recibidas)) + " gallina(s)")
+                else:
+                    game.splash("Necesitas al menos 6 madera")
+            else:
+                game.splash("No tienes suficiente madera")
+        elif selectedIndex2 == 1:
+            if playerWood >= 2:
+                intercambios = Math.idiv(playerWood, 2)
+                if intercambios > 0:
+                    playerWood += 0 - intercambios * 2
+                    patatas_recibidas = Math.round(intercambios * 1.5)
+                    playerPotatoes += patatas_recibidas
+                    game.splash("Recibiste " + ("" + str(patatas_recibidas)) + "kg de patatas")
+                else:
+                    game.splash("Necesitas al menos 2 madera")
+            else:
+                game.splash("No tienes suficiente madera")
+        elif selectedIndex2 == 2:
+            if playerWood >= 5:
+                intercambios = Math.idiv(playerWood, 5)
+                if intercambios > 0:
+                    playerWood += 0 - intercambios * 5
+                    playerCabras += intercambios
+                    game.splash("Recibiste " + ("" + str(intercambios)) + " cabra(s)")
+                else:
+                    game.splash("Necesitas al menos 5 madera")
+            else:
+                game.splash("No tienes suficiente madera")
+        elif selectedIndex2 == 3:
+            if playerWood >= 3:
+                intercambios = Math.idiv(playerWood, 3)
+                if intercambios > 0:
+                    playerWood += 0 - intercambios * 3
+                    huevos_recibidos = intercambios * 6
+                    playerEggs += huevos_recibidos
+                    game.splash("Recibiste " + ("" + str(huevos_recibidos)) + " huevos")
+                else:
+                    game.splash("Necesitas al menos 3 madera")
+            else:
+                game.splash("No tienes suficiente madera")
+        elif selectedIndex2 == 4:
+            if playerWood >= 12:
+                intercambios = Math.idiv(playerWood, 12)
+                if intercambios > 0:
+                    playerWood += 0 - intercambios * 12
+                    playerHorse += intercambios
+                    game.splash("Recibiste " + ("" + str(intercambios)) + " caballo(s)")
+                else:
+                    game.splash("Necesitas al menos 12 madera")
+            else:
+                game.splash("No tienes suficiente madera")
+        myMenu2.close()
+    myMenu2.on_button_pressed(controller.A, on_button_pressed)
+    
+    myMenu2.set_title("Shop")
+    myMenu2.set_position(80, 60)
+    house_inventory = myMenu2
 def actualizar_cantidades():
     cantidades_recursos[0] = playerWood
     cantidades_recursos[1] = playerChicken
@@ -168,39 +268,15 @@ def on_menu_pressed():
             miniMenu.StyleProperty.BACKGROUND,
             8)
         
-        def on_button_pressed(selection, selectedIndex):
+        def on_button_pressed2(selection, selectedIndex):
             pass
-        myMenu.on_button_pressed(controller.A, on_button_pressed)
+        myMenu.on_button_pressed(controller.A, on_button_pressed2)
         
     else:
         myMenu.close()
         menu_open = False
 controller.menu.on_event(ControllerButtonEvent.PRESSED, on_menu_pressed)
 
-def house_menu2():
-    global house_menu, myMenu2, house_inventory
-    menu_items: List[miniMenu.MenuItem] = []
-    house_menu = ["Chickens", "Potatoes", "Goats", "Eggs", "Horses"]
-    for item in house_menu:
-        menu_items.append(miniMenu.create_menu_item(item))
-    myMenu2 = miniMenu.create_menu_from_array(menu_items)
-    
-    def on_button_pressed2(selection2, selectedIndex2):
-        if selectedIndex2 == 0:
-            pass
-        elif selectedIndex2 == 1:
-            pass
-        elif selectedIndex2 == 2:
-            pass
-        elif selectedIndex2 == 3:
-            pass
-        elif selectedIndex2 == 4:
-            pass
-    myMenu2.on_button_pressed(controller.A, on_button_pressed2)
-    
-    myMenu2.set_title("House Menu")
-    myMenu2.set_position(80, 60)
-    house_inventory = myMenu2
 def regenerar_arbol():
     global tree_cut
     if tree_cut:
@@ -212,16 +288,16 @@ def regenerar_arbol():
             tree_cut = False
 last_chop_time = 0
 current_time2 = 0
-house_inventory: miniMenu.MenuSprite = None
-myMenu2: miniMenu.MenuSprite = None
-house_menu: List[str] = []
-myMenu: miniMenu.MenuSprite = None
 menu_open = False
 i = 0
 backpack: List[miniMenu.MenuItem] = []
+house_inventory: miniMenu.MenuSprite = None
 playerEggs = 0
 playerCabras = 0
 playerPotatoes = 0
+myMenu: miniMenu.MenuSprite = None
+myMenu2: miniMenu.MenuSprite = None
+house_menu: List[str] = []
 playerWood = 0
 tree_cut_time = 0
 tree_cut = False
@@ -233,6 +309,7 @@ arbre: Sprite = None
 cantidades_recursos: List[number] = []
 nombres_recursos: List[str] = []
 regrowth_time = 0
+house_menu2: List[number] = []
 last_text_time = 0
 last_time_dialogue = 0
 tiempo_actual = 0
