@@ -12,12 +12,13 @@ def on_up_pressed():
         False)
 controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
 
-def conseguir_gallina():
-    global playerChicken
-    playerChicken += 1
-def conseguir_caballo():
-    global playerHorse
-    playerHorse += 1
+def on_b_pressed():
+    shop_open
+    if shop_open:
+        myMenu2.close()
+        shop_open = False
+controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
+
 def cortar_arbol():
     global tree_cut, tree_cut_time, playerWood
     arbre.set_image(img("""
@@ -60,8 +61,10 @@ def cortar_arbol():
     actualizar_cantidades()
 
 def on_a_pressed():
-    if nena.overlaps_with(casa):
+    global shop_open
+    if nena.overlaps_with(casa) and not (shop_open):
         house_menu3()
+        shop_open = True
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_left_pressed():
@@ -74,8 +77,8 @@ def on_left_pressed():
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
 def house_menu3():
-    global house_menu, myMenu2, house_inventory
     menu_items: List[miniMenu.MenuItem] = []
+    [house_menu, myMenu2, shop_open]
     house_menu = ["Chickens", "Potatoes", "Goats", "Eggs", "Horses"]
     for item in house_menu:
         menu_items.append(miniMenu.create_menu_item(item))
@@ -107,7 +110,7 @@ def house_menu3():
         ..bbbbbbbbbbbbbbbbbbbb..
         """))
     myMenu2.set_dimensions(100, 90)
-            
+    
     def on_button_pressed(selection2, selectedIndex2):
         global playerWood, playerChicken, playerPotatoes, playerCabras, playerEggs, playerHorse
         if selectedIndex2 == 0:
@@ -167,12 +170,10 @@ def house_menu3():
                     game.splash("Necesitas al menos 12 madera")
             else:
                 game.splash("No tienes suficiente madera")
-        myMenu2.close()
     myMenu2.on_button_pressed(controller.A, on_button_pressed)
     
     myMenu2.set_title("Shop")
     myMenu2.set_position(80, 60)
-    house_inventory = myMenu2
 def actualizar_cantidades():
     cantidades_recursos[0] = playerWood
     cantidades_recursos[1] = playerChicken
@@ -188,9 +189,6 @@ def crear_menu_inventario():
         item_texto = "" + nombres_recursos[i] + ": " + ("" + str(cantidades_recursos[i]))
         backpack.append(miniMenu.create_menu_item(item_texto))
         i += 1
-def conseguir_huevo():
-    global playerEggs
-    playerEggs += 1
 
 def on_right_pressed():
     animation.run_image_animation(nena,
@@ -200,13 +198,6 @@ def on_right_pressed():
         500,
         False)
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
-
-def conseguir_patata():
-    global playerPotatoes
-    playerPotatoes += 1
-def conseguir_cabra():
-    global playerCabras
-    playerCabras += 1
 
 def on_down_pressed():
     animation.run_image_animation(nena,
@@ -286,38 +277,44 @@ def regenerar_arbol():
                 treePine
                 """))
             tree_cut = False
+"""
+
+Variables globales
+
+"""
+"""
+
+Nueva variable para controlar la tienda
+
+"""
 last_chop_time = 0
 current_time2 = 0
+myMenu: miniMenu.MenuSprite = None
 menu_open = False
 i = 0
 backpack: List[miniMenu.MenuItem] = []
-house_inventory: miniMenu.MenuSprite = None
+playerHorse = 0
 playerEggs = 0
 playerCabras = 0
 playerPotatoes = 0
-myMenu: miniMenu.MenuSprite = None
-myMenu2: miniMenu.MenuSprite = None
-house_menu: List[str] = []
+playerChicken = 0
 playerWood = 0
 tree_cut_time = 0
 tree_cut = False
-playerHorse = 0
-playerChicken = 0
 nena: Sprite = None
 casa: Sprite = None
 arbre: Sprite = None
 cantidades_recursos: List[number] = []
 nombres_recursos: List[str] = []
 regrowth_time = 0
-house_menu2: List[number] = []
-last_text_time = 0
-last_time_dialogue = 0
-tiempo_actual = 0
-chop_cooldown = 2000
+shop_open = False
+myMenu2 = None
 regrowth_time = 3000
-text_cooldown = 2000
+chop_cooldown = 2000
+# Inicializar listas de recursos
 nombres_recursos = ["Wood", "Chickens", "Potatoes", "Goats", "Eggs", "Horses"]
 cantidades_recursos = [0, 0, 0, 0, 0, 0]
+# Configuración inicial del juego
 scene.set_background_image(assets.image("""
     seasonalTree1
     """))
@@ -393,6 +390,7 @@ def on_forever():
             if current_time2 - last_chop_time >= chop_cooldown:
                 last_chop_time = current_time2
                 cortar_arbol()
+    # Permitir cerrar el inventario con B
     if menu_open == True and controller.B.is_pressed():
         menu_open = False
         myMenu.close()
